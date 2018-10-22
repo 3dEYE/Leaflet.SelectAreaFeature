@@ -5,17 +5,17 @@
     <meta charset="UTF-8" />
     <title>Leaflet Tester</title>
 
-	<script src="./lib/js/jquery.js"></script>
+	<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.min.js"></script>
 	
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
    integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
    crossorigin=""/>
      <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
-   crossorigin=""></script>
-	
-	<script src="./lib/js/Leaflet.SelectAreaFeature.js"></script>
+	 crossorigin=""></script>
+			<script src="main.bundle.js"></script>
 
+	
 	<style type="text/css">
     .btn {
         background-color:orange;
@@ -440,6 +440,10 @@ var punten = L.layerGroup([a1,a2,a3,a4,a5])	;
 	  
 	  selectfeature.options.color = '#663399' ;
 	  selectfeature.options.weight = 3 ;
+	});
+
+	map.on('selectarea:drawend', () => {
+		map.selectAreaFeature.disable();
 	});
 
 </script>
