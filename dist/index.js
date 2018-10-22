@@ -117,13 +117,33 @@ var SelectAreaFeature = L.Handler.extend({
         this.map.removeLayer(this.areaPolygonLayers[index]);
         this.areaPolygonLayers.splice(index, 1);
     },
+    isMarkerInsidePolygon: function (marker, poly) {
+        var polyPoints = poly.getLatLngs()[0];
+        var x = marker.getLatLng().lat;
+        var y = marker.getLatLng().lng;
+        var inside = false;
+        for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+            var xi = polyPoints[i].lat;
+            var yi = polyPoints[i].lng;
+            var xj = polyPoints[j].lat;
+            var yj = polyPoints[j].lng;
+            var intersect = ((yi > y) !== (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    },
     getFeaturesSelected: function (layertype) {
+        var _this = this;
         var layersFound = [];
         var pol;
         var i = 0;
         var areaPolygonLayers = this.areaPolygonLayers;
         var map = this.map;
-        while (i < areaPolygonLayers.length) {
+        var _loop_1 = function () {
+            var polygon = areaPolygonLayers[i];
             pol = areaPolygonLayers[i].getBounds();
             map.eachLayer(function (layer) {
                 if ((layertype === 'polygon' || layertype === 'all') &&
@@ -155,7 +175,8 @@ var SelectAreaFeature = L.Handler.extend({
                     }
                 }
                 if ((layertype === 'marker' || layertype === 'all') && layer instanceof L.Marker) {
-                    if (pol.contains(layer.getLatLng())) {
+                    // https://github.com/sandropibia/Leaflet.SelectAreaFeature/issues/7
+                    if (_this.isMarkerInsidePolygon(layer, polygon)) {
                         layersFound.push(layer);
                     }
                 }
@@ -166,6 +187,9 @@ var SelectAreaFeature = L.Handler.extend({
                 }
             });
             i++;
+        };
+        while (i < areaPolygonLayers.length) {
+            _loop_1();
         }
         if (layersFound.length === 0) {
             return null;

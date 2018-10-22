@@ -20,6 +20,7 @@ declare module 'leaflet' {
         onMouseDown: L.LeafletEventHandlerFn;
         onMouseMove: L.LeafletEventHandlerFn;
         onMouseUp: L.LeafletEventHandlerFn;
+        isMarkerInsidePolygon: (marker: L.Marker, poly: L.Polygon) => boolean;
         getFeaturesSelected: (layertype: 'all' | 'polyline' | 'polygon' | 'circle' | 'marker' | 'rectangle' | 'circlemarker') => L.Layer[] | null;
         removeLastArea: () => void;
         removeAllArea: () => void;

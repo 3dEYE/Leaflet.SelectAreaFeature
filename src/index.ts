@@ -22,6 +22,7 @@ declare module 'leaflet' {
         onMouseDown: L.LeafletEventHandlerFn;
         onMouseMove: L.LeafletEventHandlerFn;
         onMouseUp: L.LeafletEventHandlerFn;
+        isMarkerInsidePolygon: (marker: L.Marker, poly: L.Polygon) => boolean;
         getFeaturesSelected: (layertype: 'all' | 'polyline' | 'polygon' | 'circle' | 'marker' | 'rectangle' | 'circlemarker') => L.Layer[] | null;
         removeLastArea: () => void;
         removeAllArea: () => void;
@@ -173,7 +174,30 @@ const SelectAreaFeature = L.Handler.extend({
         this.areaPolygonLayers.splice(index, 1);
     },
 
-    getFeaturesSelected(this: L.SelectAreaFeature, layertype: 'all'|'polyline'|'polygon'|'circle'|'marker'|'rectangle'|'circlemarker') {
+    isMarkerInsidePolygon(marker: L.Marker, poly: L.Polygon) {
+        const polyPoints = poly.getLatLngs()[0] as L.LatLng[];
+        const x = marker.getLatLng().lat;
+        const y = marker.getLatLng().lng;
+
+        let inside = false;
+
+        for (let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+            const xi = polyPoints[i].lat;
+            const yi = polyPoints[i].lng;
+
+            const xj = polyPoints[j].lat;
+            const yj = polyPoints[j].lng;
+
+            const intersect = ((yi > y) !== (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    },
+
+    getFeaturesSelected(this: L.SelectAreaFeature, layertype: 'all' | 'polyline' | 'polygon' | 'circle' | 'marker' | 'rectangle' | 'circlemarker') {
         const layersFound: L.Layer[] = [];
         let pol: L.LatLngBounds;
         let i = 0;
@@ -223,7 +247,9 @@ const SelectAreaFeature = L.Handler.extend({
                     }
                 }
                 if ((layertype === 'marker' || layertype === 'all') && layer instanceof L.Marker) {
-                    if (pol.contains(layer.getLatLng())) {
+                    // https://github.com/sandropibia/Leaflet.SelectAreaFeature/issues/7
+
+                    if (this.isMarkerInsidePolygon(layer as L.Marker, polygon)) {
                         layersFound.push(layer);
                     }
                 }
