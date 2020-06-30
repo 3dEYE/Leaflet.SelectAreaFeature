@@ -1,16 +1,17 @@
 {
-  "name": "leaflet-selectareafeature",
+  "name": "@3deye/leaflet-selectareafeature",
   "version": "0.1.2",
   "description": "Plugin that selects feature(s) by drawing an area on the map",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sandropibia/Leaflet.SelectAreaFeature.git"
+    "url": "git+https://github.com/3dEYE/Leaflet.SelectAreaFeature.git"
   },
   "scripts": {
     "start": "webpack-dev-server --port 9000 --inline --progress --colors --watch --content-base examples/ --mode development",
-    "build": "tsc --outDir dist --module es2015 --declaration src/index.ts"
+    "build": "tsc --outDir dist --module es2015 --declaration src/index.ts",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "leaflet",
